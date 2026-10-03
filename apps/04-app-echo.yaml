@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-echo-html
+  namespace: parcial-ricj
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Contacto</title>
+      <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; display: flex;
+          align-items: center; justify-content: center;
+          font-family: 'Segoe UI', Tahoma, sans-serif; background: #b8d8d0; }
+        .card { background: #fff; padding: 48px 64px; border-radius: 20px;
+          text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+        h1 { margin: 0 0 8px; color: #1f2544; font-size: 2.2rem; }
+        p { margin: 0 0 24px; color: #666; }
+        .badge { display: inline-block; padding: 8px 20px; border-radius: 999px;
+          background: #f5e6b8; color: #1f2544; font-weight: 600; }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <h1>Contacto</h1>
+        <p>Parcial 02 - Kubernetes</p>
+        <span class="badge">echo.parcial.local</span>
+      </div>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-echo
+  namespace: parcial-ricj
+  labels:
+    app: app-echo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-echo
+  template:
+    metadata:
+      labels:
+        app: app-echo
+    spec:
+      containers:
+        - name: web
+          image: nginx:stable
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: html
+          configMap:
+            name: app-echo-html
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-echo
+  namespace: parcial-ricj
+spec:
+  type: ClusterIP
+  selector:
+    app: app-echo
+  ports:
+    - port: 80
+      targetPort: 80
