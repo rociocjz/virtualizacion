@@ -52,12 +52,12 @@ spec:
     spec:
       containers:
         - name: web
-          image: nginx:stable
+          image: caddy:2
           ports:
             - containerPort: 80
           volumeMounts:
             - name: html
-              mountPath: /usr/share/nginx/html
+              mountPath: /usr/share/caddy
       volumes:
         - name: html
           configMap:

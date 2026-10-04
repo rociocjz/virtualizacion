@@ -35,18 +35,7 @@ kubectl get pods -n metallb-system
 kubectl get ipaddresspool -n metallb-system
 kubectl get l2advertisement -n metallb-system
 ```
-
-
-roiveth@Iveth:~/url/virtualizacion$ kubectl get pods -n metallb-system
-NAME                          READY   STATUS    RESTARTS        AGE
-controller-6c57b67fd4-fkbqg   1/1     Running   2 (7h37m ago)   8h
-speaker-znv7q                 1/1     Running   2 (7h37m ago)   8h
-roiveth@Iveth:~/url/virtualizacion$ kubectl get ipaddresspool,l2advertisement -n metallb-system
-NAME                                      AUTO ASSIGN   AVOID BUGGY IPS   ADDRESSES
-ipaddresspool.metallb.io/single-ip-pool   true          false             ["192.168.49.200/32"]
-
-NAME                                          IPADDRESSPOOLS       IPADDRESSPOOL SELECTORS   INTERFACES
-l2advertisement.metallb.io/l2-advertisement   ["single-ip-pool"]
+![MetalLB verification](docs/verification1.png)
 
 ## 2. Traefik Configuration
 
@@ -72,10 +61,7 @@ The Traefik LoadBalancer received the following IP:
 CLUSTER-IP:  10.100.191.66
 EXTERNAL-IP: 192.168.49.200
 ```
-
-roiveth@Iveth:~/url/virtualizacion$ kubectl get svc -n traefik
-NAME      TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)        AGE
-traefik   LoadBalancer   10.100.191.66   192.168.49.200   80:31651/TCP   8h
+![Traefik LoadBalancer](docs/verification2.png)
 
 ## 3. Application Namespace
 
@@ -90,47 +76,28 @@ This namespace follows the required naming convention using the initials of the 
 ```bash
 kubectl get ns
 ```
+![IngressRoutes](docs/verification4.png)
 
 ## 4. Applications
 
-Four web applications were created:
+The four applications use **different images**. Three of them serve custom HTML pages stored in ConfigMaps.
 
-| Application | Service | Domain |
-|---|---|---|
-| Home | `app-nginx` | `nginx.parcial.local` |
-| About | `app-httpd` | `httpd.parcial.local` |
-| Projects | `app-whoami` | `whoami.parcial.local` |
-| Contact | `app-echo` | `echo.parcial.local` |
+| Application | Service | Image | Domain |
+|---|---|---|---|
+| Home | `app-nginx` | `nginx:stable` | `nginx.parcial.local` |
+| About | `app-httpd` | `httpd:2.4` (Apache) | `httpd.parcial.local` |
+| Projects | `app-whoami` | `traefik/whoami` | `whoami.parcial.local` |
+| Contact | `app-echo` | `caddy:2` | `echo.parcial.local` |
 
-The applications use Nginx containers with custom HTML pages stored in ConfigMaps. Each file in `apps/` contains a ConfigMap, a Deployment and a Service.
-
-The Kubernetes configuration is located in `apps/`.
+The Nginx, Apache and Caddy apps each have a ConfigMap, a Deployment and a Service. The whoami app (`03-app-whoami.yaml`) only has a Deployment and a Service, since it serves its own built-in page.
 
 Verification:
 
 ```bash
 kubectl get pods,svc,configmap -n parcial-ricj
 ```
+![Applications](docs/verification3.png)
 
-roiveth@Iveth:~/url/virtualizacion$ kubectl get pods,svc,configmap -n parcial-ricj
-NAME                              READY   STATUS    RESTARTS   AGE
-pod/app-echo-7c6d9d5584-7r29x     1/1     Running   0          3h4m
-pod/app-httpd-59998fc9dd-2vqj9    1/1     Running   0          3h4m
-pod/app-nginx-667f76556-t5djt     1/1     Running   0          3h4m
-pod/app-whoami-6469b556cb-lqt89   1/1     Running   0          3h4m
-
-NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
-service/app-echo     ClusterIP   10.101.44.209   <none>        80/TCP    9h
-service/app-httpd    ClusterIP   10.101.39.250   <none>        80/TCP    9h
-service/app-nginx    ClusterIP   10.102.28.12    <none>        80/TCP    9h
-service/app-whoami   ClusterIP   10.111.23.40    <none>        80/TCP    9h
-
-NAME                         DATA   AGE
-configmap/app-echo-html      1      3h4m
-configmap/app-httpd-html     1      3h4m
-configmap/app-nginx-html     1      3h4m
-configmap/app-whoami-html    1      3h4m
-configmap/kube-root-ca.crt   1      9h
 
 ## 5. Traefik Routing
 
