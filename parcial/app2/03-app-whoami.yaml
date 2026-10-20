@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-whoami
+  namespace: parcial-ricj
+  labels:
+    app: app-whoami
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-whoami
+  template:
+    metadata:
+      labels:
+        app: app-whoami
+    spec:
+      containers:
+        - name: whoami
+          image: traefik/whoami:latest
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-whoami
+  namespace: parcial-ricj
+spec:
+  type: ClusterIP
+  selector:
+    app: app-whoami
+  ports:
+    - port: 80
+      targetPort: 80

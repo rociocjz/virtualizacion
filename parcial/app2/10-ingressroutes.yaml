@@ -1,0 +1,59 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: app-nginx
+  namespace: parcial-ricj
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`nginx.parcial.local`)
+      kind: Rule
+      services:
+        - name: app-nginx
+          port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: app-httpd
+  namespace: parcial-ricj
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`httpd.parcial.local`)
+      kind: Rule
+      services:
+        - name: app-httpd
+          port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: app-whoami
+  namespace: parcial-ricj
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`whoami.parcial.local`)
+      kind: Rule
+      services:
+        - name: app-whoami
+          port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: app-echo
+  namespace: parcial-ricj
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`echo.parcial.local`)
+      kind: Rule
+      services:
+        - name: app-echo
+          port: 80
