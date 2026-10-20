@@ -19,11 +19,11 @@
 ```
 .
 ├── argocd/
-│   ├── values.yaml                 # Helm values (server.insecure)
-│   ├── ingressroute.yaml           # Traefik route for Argo CD
-│   ├── fix-rbac.sh                 # ClusterRoleBinding fix
-│   ├── application-app1.yaml       # Argo CD Application 1
-│   └── application-app2.yaml       # Argo CD Application 2
+│   ├── values.yaml
+│   ├── ingressroute.yaml
+│   ├── fix-rbac.sh
+│   ├── application-app1.yaml
+│   └── application-app2.yaml
 ```
 
 ## 1. Argo CD Installation
@@ -50,19 +50,18 @@ All Argo CD pods reached the `Running` state.
 
 ### RBAC fix
 
-After creating the Applications, they stayed in `Unknown` status. The application controller reported that its service account could not list cluster-scoped resources (`roles.rbac.authorization.k8s.io is forbidden`). The `ClusterRoleBinding` subjects were patched to point to the `argocd-ricj` namespace (`argocd/fix-rbac.sh`), and the Argo CD components were restarted:
+After creating the Applications, they stayed in `Unknown` status. The application controller reported that its service account could not list cluster-scoped resources (`roles.rbac.authorization.k8s.io is forbidden`). The cause was that the cluster role bindings did not reference the `argocd-ricj` namespace. The subjects were fixed (`argocd/fix-rbac.sh`) and the Argo CD components were restarted. After that, both Applications moved to `Synced` and `Healthy`.
+
+Verification that the bindings now point to the correct namespace:
 
 ```bash
-for crb in argocd-application-controller argocd-server argocd-applicationset-controller; do
-  kubectl patch clusterrolebinding $crb --type='json' \
-    -p='[{"op":"replace","path":"/subjects/0/namespace","value":"argocd-ricj"}]'
-done
-kubectl rollout restart statefulset argocd-application-controller -n argocd-ricj
-kubectl rollout restart deployment argocd-server argocd-repo-server -n argocd-ricj
+kubectl get clusterrolebinding argocd-application-controller \
+  -o jsonpath='{.subjects[0].namespace}{"\n"}'
 ```
 
-After that, both Applications moved to `Synced` and `Healthy`.
-
+```
+argocd-ricj
+```
 ### Cluster status and Argo CD resources
 
 ![Cluster status and Argo CD installation](img/01-cluster-and-argocd-install.png)
