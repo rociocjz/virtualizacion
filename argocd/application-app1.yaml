@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: parcial-app1
+  namespace: argocd-ricj
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/rociocjz/virtualizacion.git
+    targetRevision: assessment-06
+    path: parcial/app1
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: parcial-ricj
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
