@@ -19,17 +19,11 @@
 ```
 .
 ├── argocd/
-│   ├── argocd-cmd-params-cm.yaml   # server.insecure: "true"
+│   ├── values.yaml                 # Helm values (server.insecure)
 │   ├── ingressroute.yaml           # Traefik route for Argo CD
 │   ├── fix-rbac.sh                 # ClusterRoleBinding fix
 │   ├── application-app1.yaml       # Argo CD Application 1
 │   └── application-app2.yaml       # Argo CD Application 2
-├── parcial/
-│   ├── app1/                       # nginx and httpd
-│   └── app2/                       # whoami, echo and IngressRoutes
-├── metallb/
-├── traefik/
-└── img/
 ```
 
 ## 1. Argo CD Installation
