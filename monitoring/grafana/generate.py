@@ -35,9 +35,9 @@ metrics = dash("cluster-metrics", "Cluster Metrics (ricj)", [var("ds_prom", "pro
           [('sum(kube_pod_status_phase{phase="Running"})', "Running")]),
     panel(4, "Pods by phase", "timeseries", 6, 8, 18, 6, P,
           [('sum by (phase) (kube_pod_status_phase)', "{{phase}}")]),
-    panel(5, "CPU by pod (parcial-ricj)", "timeseries", 0, 14, 12, 8, P,
+    panel(5, "CPU by pod (parcial-ricj)", "timeseries", 0, 14, 12, 11, P,
           [('sum by (pod) (rate(container_cpu_usage_seconds_total{%s}[5m]))' % NS, "{{pod}}")]),
-    panel(6, "Memory by pod (parcial-ricj)", "timeseries", 12, 14, 12, 8, P,
+    panel(6, "Memory by pod (parcial-ricj)", "timeseries", 12, 14, 12, 11, P,
           [('sum by (pod) (container_memory_working_set_bytes{%s})' % NS, "{{pod}}")],
           fieldConfig=unit("bytes")),
 ])
