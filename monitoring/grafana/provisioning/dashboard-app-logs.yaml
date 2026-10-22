@@ -1,0 +1,210 @@
+apiVersion: v1
+data:
+  app-logs.json: |-
+    {
+      "uid": "app-logs",
+      "title": "Application Logs (ricj)",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "30s",
+      "time": {
+        "from": "now-1h",
+        "to": "now"
+      },
+      "templating": {
+        "list": [
+          {
+            "name": "ds_loki",
+            "label": "Loki",
+            "type": "datasource",
+            "query": "loki",
+            "current": {},
+            "hide": 0
+          }
+        ]
+      },
+      "panels": [
+        {
+          "id": 1,
+          "title": "Log volume per app",
+          "type": "timeseries",
+          "datasource": {
+            "type": "loki",
+            "uid": "${ds_loki}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 7
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (app) (count_over_time({namespace=~\"parcial-ricj|traefik\"}[1m]))",
+              "legendFormat": "{{app}}",
+              "datasource": {
+                "type": "loki",
+                "uid": "${ds_loki}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "Logs: app-nginx",
+          "type": "logs",
+          "datasource": {
+            "type": "loki",
+            "uid": "${ds_loki}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 7,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "{namespace=\"parcial-ricj\", app=\"app-nginx\"}",
+              "legendFormat": "",
+              "datasource": {
+                "type": "loki",
+                "uid": "${ds_loki}"
+              }
+            }
+          ],
+          "options": {
+            "showTime": true,
+            "sortOrder": "Descending"
+          }
+        },
+        {
+          "id": 3,
+          "title": "Logs: app-httpd",
+          "type": "logs",
+          "datasource": {
+            "type": "loki",
+            "uid": "${ds_loki}"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 7,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "{namespace=\"parcial-ricj\", app=\"app-httpd\"}",
+              "legendFormat": "",
+              "datasource": {
+                "type": "loki",
+                "uid": "${ds_loki}"
+              }
+            }
+          ],
+          "options": {
+            "showTime": true,
+            "sortOrder": "Descending"
+          }
+        },
+        {
+          "id": 4,
+          "title": "Logs: app-whoami",
+          "type": "logs",
+          "datasource": {
+            "type": "loki",
+            "uid": "${ds_loki}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 15,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "{namespace=\"parcial-ricj\", app=\"app-whoami\"}",
+              "legendFormat": "",
+              "datasource": {
+                "type": "loki",
+                "uid": "${ds_loki}"
+              }
+            }
+          ],
+          "options": {
+            "showTime": true,
+            "sortOrder": "Descending"
+          }
+        },
+        {
+          "id": 5,
+          "title": "Logs: app-echo",
+          "type": "logs",
+          "datasource": {
+            "type": "loki",
+            "uid": "${ds_loki}"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 15,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "{namespace=\"parcial-ricj\", app=\"app-echo\"}",
+              "legendFormat": "",
+              "datasource": {
+                "type": "loki",
+                "uid": "${ds_loki}"
+              }
+            }
+          ],
+          "options": {
+            "showTime": true,
+            "sortOrder": "Descending"
+          }
+        },
+        {
+          "id": 6,
+          "title": "Logs: traefik",
+          "type": "logs",
+          "datasource": {
+            "type": "loki",
+            "uid": "${ds_loki}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 23,
+            "w": 12,
+            "h": 8
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "{namespace=\"traefik\"}",
+              "legendFormat": "",
+              "datasource": {
+                "type": "loki",
+                "uid": "${ds_loki}"
+              }
+            }
+          ],
+          "options": {
+            "showTime": true,
+            "sortOrder": "Descending"
+          }
+        }
+      ]
+    }
+kind: ConfigMap
+metadata:
+  labels:
+    grafana_dashboard: "1"
+  name: grafana-dashboard-app-logs
+  namespace: monitoring-ricj
