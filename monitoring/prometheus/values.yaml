@@ -1,0 +1,62 @@
+fullnameOverride: kps
+
+alertmanager:
+  enabled: false
+
+kubeEtcd:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeProxy:
+  enabled: false
+
+prometheus:
+  prometheusSpec:
+    retention: 24h
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 400Mi
+      limits:
+        memory: 900Mi
+
+prometheus-node-exporter:
+  resources:
+    limits:
+      memory: 64Mi
+
+kube-state-metrics:
+  resources:
+    limits:
+      memory: 128Mi
+
+grafana:
+  fullnameOverride: grafana
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 384Mi
+  grafana.ini:
+    server:
+      domain: grafana.parcial.local
+      root_url: http://grafana.parcial.local/
+  sidecar:
+    datasources:
+      defaultDatasourceEnabled: true
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+      searchNamespace: monitoring-ricj
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki.monitoring-ricj.svc.cluster.local:3100
+      isDefault: false
